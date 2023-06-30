@@ -8,7 +8,7 @@ import plotly.express as px
 
 #getting the dataset
 
-pro = pd.read_csv('C:/Users/huyho/Documents/code/data/Employee-Attrition.csv')
+pro = pd.read_csv('https://raw.githubusercontent.com/PhamHuyHoang123/quynh/main/Employee-Attrition.csv')
 
 #dash app
 
