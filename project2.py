@@ -1,3 +1,4 @@
+
 import dash
 from dash import html as html
 from dash import dcc as dcc
@@ -12,8 +13,9 @@ pro = pd.read_csv('https://raw.githubusercontent.com/PhamHuyHoang123/quynh/main/
 
 #dash app
 
-app = dash.Dash()
+app = dash.Dash(__name__)
 server = app.server
+
 #layout
 app.layout = html.Div(children = [
     html.Div([
@@ -22,6 +24,7 @@ app.layout = html.Div(children = [
     ], style={'background-color': '#f8f9fa', 'padding': '20px'}),
     html.Div([
         html.Div([
+            html.Label('select types of department:', style={'color': '#1F618D'}),
             dcc.Checklist(
                 id = 'geo-checklist',
                 options = [{'label': i, 'value': i}
@@ -30,6 +33,7 @@ app.layout = html.Div(children = [
                 labelStyle={'display': 'block', 'margin': '10px'}
             ),
             dcc.Graph(id = 'price-graph'),
+            html.Label('Range of number of years working:', style={'color': '#1F618D'}),
             dcc.RangeSlider(
                 id='range-slider',
                 min=pro['YearsInCurrentRole'].min(),
@@ -52,6 +56,11 @@ app.layout = html.Div(children = [
 def update_scatter(selected_departments, selected_range):
     data = pro[(pro['Department'].isin(selected_departments)) & (pro['YearsInCurrentRole'] >= selected_range[0]) & (pro['YearsInCurrentRole'] <= selected_range[1])]
     graph = px.scatter(data, x ='YearsInCurrentRole', y = 'YearsAtCompany', color='Attrition')
+    graph.update_layout(
+        plot_bgcolor='#f8f8f8', paper_bgcolor='#f8f8f8',
+        font_color='#333333', title_font_size=30,
+        xaxis_title='Number of years in current role', yaxis_title='Number of year at company'
+    )
     return graph
 
 @app.callback(
@@ -60,9 +69,13 @@ def update_scatter(selected_departments, selected_range):
 )
 def update_bar(selected_departments):
     data = pro[pro['Department'].isin(selected_departments)]
-    bar = px.histogram(data, x ='MonthlyIncome', nbins=30)
+    bar = px.histogram(data, x ='MonthlyIncome',color = 'Gender', nbins=30)
+    bar.update_layout(
+        plot_bgcolor='#f8f8f8', paper_bgcolor='#f8f8f8',
+        font_color='#333333', title_font_size=30,
+        xaxis_title='Monthly income', yaxis_title='Count'
+    )
     return bar
 
 if __name__ == '__main__':
     app.run_server(debug = True)
-
